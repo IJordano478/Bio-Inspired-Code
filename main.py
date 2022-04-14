@@ -59,6 +59,9 @@ def plot_world(map_truth, robots=None):
     # Remove this line if you want to run tests and print the output
     #clear_output(wait=True)
     plt.gcf()
+    for i in range(0, 3):
+        for j in range(0, 2):
+            ax[j, i].clear()
 
     titles = ['Ground truth nitrogen', 'Ground truth phosphorus', 'Ground truth potassium']
     # Plot map
@@ -79,6 +82,7 @@ def plot_world(map_truth, robots=None):
             ax[1, i].title.set_text(titles2[i])
             plt.gca().set_aspect('equal', adjustable='box')
     plt.draw()
+    plt.pause(0.001)
 
 
 
@@ -95,8 +99,11 @@ def verify_robot_position(swarm, world_size_x, world_size_y):
 
 
 # fig, ax = plt.subplots(figsize=(10, 10))
+plt.ion()
+plt.show()
+time.sleep(0.5)
 fig, ax = plt.subplots(2, 3, figsize=(5, 5))
-plt.show(block=False)
+
 
 map_truth = generate_map(world_size_x, world_size_y, n_points, blur_size)
 plot_world(map_truth, swarm)
@@ -112,4 +119,4 @@ while (True):
 
     plot_world(map_truth, swarm)
     print("looped")
-    time.sleep(3)
+    time.sleep(0.5)
