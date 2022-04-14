@@ -76,8 +76,8 @@ class Swarm:
         robot1: Swarm.Robot
         robot2: Swarm.Robot
         new_map = np.maximum(robot1.map, robot2.map)
-        robot1.map = new_map
-        robot2.map = new_map
+        robot1.map = np.copy(new_map)
+        robot2.map = np.copy(new_map)
         return
 
 def generate_map(world_size_x, world_size_y, n_points, blur_size):
@@ -118,6 +118,8 @@ def plot_world(map_truth, robots=None):
     for i in range(0, 3):
         ax[0, i].pcolormesh(x, y, map_truth[:, :, i])
         ax[0, i].title.set_text(titles[i])
+        ax[0, i].set_xlim([0, map_truth.shape[1]])
+        ax[0, i].set_ylim([0, map_truth.shape[0]])
         plt.gca().set_aspect('equal', adjustable='box')
 
     titles2 = ['Detected nitrogen', 'Detected phosphorus', 'Detected potassium']
@@ -173,29 +175,38 @@ fig, ax = plt.subplots(2, 3, figsize=(5, 5))
 
 
 map_truth = generate_map(world_size_x, world_size_y, n_points, blur_size)
-swarm = Swarm(20, map_truth)
+swarm = Swarm(40, map_truth)
 plot_world(map_truth)
 time.sleep(3)
+
+# Test
+swarm.swarm_list[0].map = map_truth
 
 # for i in range(0, 10):
 while (True):
     for r in swarm.swarm_list:
-        if swarm.get_within_d(r).shape[0] > 0:
+        if swarm.get_within_d(r, 5).shape[0] > 0:
             random_move = np.random.randint(-2, 3, size=2)
             r.position += random_move
             verify_single_robot_position(r, world_size_x, world_size_y)
         else:
             pass
 
+    # Motion model
     positions = np.ones((0, 2))
     for r in swarm.swarm_list:
         r: Swarm.Robot
         positions = np.vstack((positions, r.position))
     plot_world(map_truth, positions)
-    # random_move = np.random.randint(-2, 3, size=(n_robots, 2))
-    # swarm = swarm + random_move
-    # swarm = verify_robot_position(swarm, world_size_x, world_size_y)
-    #
-    # plot_world(map_truth, swarm)
-    # print("looped")
+
+    # Measurement model
+
+    # Measurement Sharing
+    for r in swarm.swarm_list:
+        in_range = swarm.get_within_d(r, 10)
+        for r2 in in_range:
+            swarm.share_map(r, r2)
+
+    for r in swarm.swarm_list:
+        print(np.equal(r.map, map_truth))
     time.sleep(0.5)
