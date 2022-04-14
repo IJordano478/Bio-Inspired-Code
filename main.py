@@ -4,6 +4,7 @@ import random
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import draw, ion
 #from IPython.display import clear_output
 from scipy.ndimage import gaussian_filter
 #% matplotlibinline
@@ -57,10 +58,11 @@ def plot_world(map_truth, robots=None):
 
     # Remove this line if you want to run tests and print the output
     #clear_output(wait=True)
+    plt.gcf()
 
     titles = ['Ground truth nitrogen', 'Ground truth phosphorus', 'Ground truth potassium']
     # Plot map
-    fig, ax = plt.subplots(2, 3, figsize=(20, 20))
+
     for i in range(0, 3):
         ax[0, i].pcolormesh(x, y, map_truth[:, :, i])
         ax[0, i].title.set_text(titles[i])
@@ -76,8 +78,8 @@ def plot_world(map_truth, robots=None):
             ax[1, i].set_ylim([0, map_truth.shape[0]])
             ax[1, i].title.set_text(titles2[i])
             plt.gca().set_aspect('equal', adjustable='box')
+    plt.draw()
 
-    plt.show()
 
 
 def verify_robot_position(swarm, world_size_x, world_size_y):
@@ -93,9 +95,14 @@ def verify_robot_position(swarm, world_size_x, world_size_y):
 
 
 # fig, ax = plt.subplots(figsize=(10, 10))
+fig, ax = plt.subplots(2, 3, figsize=(5, 5))
+plt.show(block=False)
+
 map_truth = generate_map(world_size_x, world_size_y, n_points, blur_size)
 plot_world(map_truth, swarm)
+print("started")
 time.sleep(3)
+print("finished")
 
 # for i in range(0, 10):
 while (True):
@@ -104,4 +111,5 @@ while (True):
     swarm = verify_robot_position(swarm, world_size_x, world_size_y)
 
     plot_world(map_truth, swarm)
-    time.sleep(0.01)
+    print("looped")
+    time.sleep(3)
