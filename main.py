@@ -129,6 +129,6 @@ print('done')
 # animation.save('animation.gif', writer='imagemagick', fps=30)
 
 animation = camera.animate(blit=False, interval = 200, repeat = False)
-animation.save('xy.mp4')
+animation.save('particle_swarm.mp4')
 
 print('done')
